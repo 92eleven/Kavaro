@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  qualifai:
+    build: .
+    container_name: qualifai-agent
+    ports:
+      - "8080:8080"
+    environment:
+      - QUALIFAI_MODE=server
+    volumes:
+      - .env:/app/.env
+      - ./logs:/app/logs
+      - ./knowledge_base.json:/app/knowledge_base.json
+    restart: unless-stopped
+    stdin_open: true # Allows interaction with run.py menu if needed
+    tty: true

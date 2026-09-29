@@ -1,0 +1,12 @@
+pydantic==2.5.2
+pydantic-settings==2.1.0
+langchain==0.2.0
+openai==1.6.1
+python-dotenv==1.0.0
+google-api-python-client==2.111.0
+twilio==8.10.2
+imaplib2==3.6
+fastapi==0.104.1
+httpx==0.24.1
+uvicorn==0.24.0
+email-validator==2.1.0.post1

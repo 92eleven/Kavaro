@@ -1,0 +1,24 @@
+{
+  "company_name": "Kavaro",
+  "company_description": "We help e-commerce store owners scale their revenue through AI-powered lead qualification and automated follow-up.",
+  "qualification_criteria": [
+    "Lead must be an e-commerce store owner or decision maker.",
+    "Store must be generating some existing revenue.",
+    "Lead must be looking to grow or scale their business.",
+    "Lead must be open to a discovery call."
+  ],
+  "faqs": [
+    {
+      "question": "What do you do?",
+      "answer": "We deploy AI agents that automatically qualify your inbound leads and book appointments — 24/7 with no manual work required."
+    },
+    {
+      "question": "How quickly can we get started?",
+      "answer": "Most clients are live within 48 hours of signing up."
+    },
+    {
+      "question": "What does it cost?",
+      "answer": "Our plans start at $297/month. We can walk you through the options on a quick call."
+    }
+  ]
+}
