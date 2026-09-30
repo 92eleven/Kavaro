@@ -68,7 +68,7 @@ class GmailClient(BaseIntegration):
                 },
                 json={
                     "personalizations": [{"to": [{"email": lead.email}]}],
-                    "from": {"email": "kavaroai@gmail.com"},
+                    "from": {"email": "kavaroai.agent@gmail.com"},
                     "subject": f"Re: {lead.metadata.get('subject', 'Your Inquiry')}",
                     "content": [{"type": "text/plain", "value": text}]
                 }
