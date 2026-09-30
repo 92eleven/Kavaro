@@ -3,6 +3,7 @@ import imaplib
 import email
 import os
 import httpx
+import traceback
 from email.mime.text import MIMEText
 from typing import List
 from .base import BaseIntegration
@@ -56,10 +57,15 @@ class GmailClient(BaseIntegration):
         Sends an email response to the lead via SendGrid.
         """
         api_key = os.environ.get("SENDGRID_API_KEY")
+        print(f"SendGrid API key present: {bool(api_key)}")
+        print(f"Lead email: {lead.email}")
+        
         if not api_key or not lead.email:
+            print("Missing API key or email — aborting send")
             return
             
         try:
+            print(f"Attempting SendGrid send to {lead.email}")
             response = httpx.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 headers={
@@ -74,5 +80,7 @@ class GmailClient(BaseIntegration):
                 }
             )
             print(f"SendGrid response: {response.status_code}")
+            print(f"SendGrid response body: {response.text}")
         except Exception as e:
             print(f"SendGrid send error: {e}")
+            traceback.print_exc()
