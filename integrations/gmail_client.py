@@ -3,7 +3,6 @@ import imaplib
 import email
 import os
 import httpx
-import traceback
 from email.mime.text import MIMEText
 from typing import List
 from .base import BaseIntegration
@@ -52,20 +51,15 @@ class GmailClient(BaseIntegration):
             
         return leads
 
-    def send_message(self, lead: Lead, text: str):
+    def send_sendgrid(self, to_email: str, subject: str, body: str):
         """
-        Sends an email response to the lead via SendGrid.
+        Reusable SendGrid email sender.
         """
         api_key = os.environ.get("SENDGRID_API_KEY")
-        print(f"SendGrid API key present: {bool(api_key)}")
-        print(f"Lead email: {lead.email}")
-        
-        if not api_key or not lead.email:
-            print("Missing API key or email — aborting send")
+        if not api_key:
+            print("Missing SendGrid API key")
             return
-            
         try:
-            print(f"Attempting SendGrid send to {lead.email}")
             response = httpx.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 headers={
@@ -73,14 +67,38 @@ class GmailClient(BaseIntegration):
                     "Content-Type": "application/json"
                 },
                 json={
-                    "personalizations": [{"to": [{"email": lead.email}]}],
+                    "personalizations": [{"to": [{"email": to_email}]}],
                     "from": {"email": "kavaroai.agent@gmail.com"},
-                    "subject": f"Re: {lead.metadata.get('subject', 'Your Inquiry')}",
-                    "content": [{"type": "text/plain", "value": text}]
+                    "subject": subject,
+                    "content": [{"type": "text/plain", "value": body}]
                 }
             )
-            print(f"SendGrid response: {response.status_code}")
-            print(f"SendGrid response body: {response.text}")
+            print(f"SendGrid response to {to_email}: {response.status_code}")
         except Exception as e:
             print(f"SendGrid send error: {e}")
-            traceback.print_exc()
+
+    def send_message(self, lead: Lead, text: str):
+        """
+        Sends qualification response to lead and notifies owner.
+        """
+        # Send response to lead
+        self.send_sendgrid(
+            to_email=lead.email,
+            subject=f"Re: {lead.metadata.get('subject', 'Your Inquiry')}",
+            body=text
+        )
+
+        # Notify owner
+        owner_email = "kavaroai.agent@gmail.com"
+        owner_body = (
+            f"New lead received!\n\n"
+            f"Name: {lead.name}\n"
+            f"Email: {lead.email}\n"
+            f"Source: {lead.source}\n\n"
+            f"AI Response Sent:\n{text}"
+        )
+        self.send_sendgrid(
+            to_email=owner_email,
+            subject=f"New Lead: {lead.name} ({lead.email})",
+            body=owner_body
+        )
