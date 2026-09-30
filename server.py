@@ -13,6 +13,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("QualifAI-Webhook")
 
 app = FastAPI(title="QualifAI Webhook Server")
+app.add_middleware(
+    CORSMiddleware,
 allow_origins=["*"],
 allow_methods=["*"],
 allow_headers=["*"],
