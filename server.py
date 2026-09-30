@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, Depends, Header
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from core.agent import QualifAIAgent
@@ -12,6 +13,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("QualifAI-Webhook")
 
 app = FastAPI(title="QualifAI Webhook Server")
+allow_origins=["*"],
+allow_methods=["*"],
+allow_headers=["*"],
+)
 _agent = None
 
 def get_agent():
