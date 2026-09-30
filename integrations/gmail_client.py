@@ -1,6 +1,8 @@
 import smtplib
 import imaplib
 import email
+import os
+import httpx
 from email.mime.text import MIMEText
 from typing import List
 from .base import BaseIntegration
@@ -27,8 +29,6 @@ class GmailClient(BaseIntegration):
             mail = imaplib.IMAP4_SSL("imap.gmail.com")
             mail.login(self.user, self.password)
             mail.select("inbox")
-            
-            # Search for unread emails
             status, messages = mail.search(None, 'UNSEEN')
             for num in messages[0].split():
                 status, data = mail.fetch(num, '(RFC822)')
@@ -37,7 +37,6 @@ class GmailClient(BaseIntegration):
                         msg = email.message_from_bytes(response_part[1])
                         subject = msg["subject"]
                         sender = msg["from"]
-                        # Extract basic info
                         leads.append(Lead(
                             id=f"gmail_{num.decode()}",
                             email=sender,
@@ -52,31 +51,28 @@ class GmailClient(BaseIntegration):
             
         return leads
 
-   def send_message(self, lead: Lead, text: str):
-    """
-    Sends an email response to the lead via SendGrid.
-    """
-    import os
-    import httpx
-    
-    api_key = os.environ.get("SENDGRID_API_KEY")
-    if not api_key or not lead.email:
-        return
-        
-    try:
-        response = httpx.post(
-            "https://api.sendgrid.com/v3/mail/send",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "personalizations": [{"to": [{"email": lead.email}]}],
-                "from": {"email": "kavaroai@gmail.com"},
-                "subject": f"Re: {lead.metadata.get('subject', 'Your Inquiry')}",
-                "content": [{"type": "text/plain", "value": text}]
-            }
-        )
-        print(f"SendGrid response: {response.status_code}")
-    except Exception as e:
-        print(f"SendGrid send error: {e}")
+    def send_message(self, lead: Lead, text: str):
+        """
+        Sends an email response to the lead via SendGrid.
+        """
+        api_key = os.environ.get("SENDGRID_API_KEY")
+        if not api_key or not lead.email:
+            return
+            
+        try:
+            response = httpx.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "personalizations": [{"to": [{"email": lead.email}]}],
+                    "from": {"email": "kavaroai@gmail.com"},
+                    "subject": f"Re: {lead.metadata.get('subject', 'Your Inquiry')}",
+                    "content": [{"type": "text/plain", "value": text}]
+                }
+            )
+            print(f"SendGrid response: {response.status_code}")
+        except Exception as e:
+            print(f"SendGrid send error: {e}")
