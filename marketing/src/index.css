@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  @keyframes pulse-glow {
+    0%, 100% {
+      text-shadow: 0 0 12px #00C9E8, 0 0 24px rgba(0, 201, 232, 0.6);
+    }
+    50% {
+      text-shadow: 0 0 16px #00C9E8, 0 0 32px rgba(0, 201, 232, 0.8);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
